@@ -63,11 +63,13 @@ class ImageDataReader:
             self._format = f.format
             # swarm legacy format
             try:
-                exif = json.loads(f.getexif().get(0x0110))
-                if "sui_image_params" in exif:
-                    self._tool = "StableSwarmUI"
-                    self._parser = SwarmUI(info=exif)
-            except TypeError:
+                exif_data = f.getexif().get(0x0110)                
+                if exif_data:
+                    exif = json.loads(exif_data)
+                    if "sui_image_params" in exif:
+                        self._tool = "StableSwarmUI"
+                        self._parser = SwarmUI(info=exif)
+            except (json.JSONDecodeError, TypeError):
                 if f.format == "PNG":
                     if "parameters" in self._info:
                         # swarm format
